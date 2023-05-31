@@ -69,83 +69,83 @@ void interpolGSL(unsigned int n, const double *x, const double *y) {
   double dfxint;
   double d2fxint;
 
-  int N = 1000;
-  double delta_x = (x[n - 1] - x[0]) / N;
+  int N = 1000; // Especifica el número de puntos a interpolar
+  double delta_x = (x[n - 1] - x[0]) / N; //Espacio entre los puntos
 
-  output_interp_GSL = fopen("../interpol_GSL_cubic", "w");
-  test_file_open(output_interp_GSL);
+  output_interp_GSL = fopen("../interpol_GSL_cubic", "w"); //Abre el archivo para almacenar los datos interpolados (cubic)
+  test_file_open(output_interp_GSL); //Checa si el archivo fue abierto correctamente
 
-  acc = gsl_interp_accel_alloc();
-  gsl_spline *cubic_spline;
-  cubic_spline = gsl_spline_alloc(gsl_interp_cspline, n);
-  gsl_spline_init(cubic_spline, x, y, n);
+  acc = gsl_interp_accel_alloc(); //Asigna la memoria para el acelerador de tabla de búsquedas
+  gsl_spline *cubic_spline; //Asigna la memoria para la estructura spline cúbica
+  cubic_spline = gsl_spline_alloc(gsl_interp_cspline, n); //Inicializa la spline cúbica
+  gsl_spline_init(cubic_spline, x, y, n); //Interpola los datos y los almacena en el archivo
   for (int s = 0; s <= N; s++) {
-    xint = x[0] + s * delta_x;
-    fxint = gsl_spline_eval(cubic_spline, xint, acc);
-    dfxint = gsl_spline_eval_deriv(cubic_spline, xint, acc);
-    d2fxint = gsl_spline_eval_deriv2(cubic_spline, xint, acc);
-    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint);
+    xint = x[0] + s * delta_x; //Punto a interpolar
+    fxint = gsl_spline_eval(cubic_spline, xint, acc); //Valor interpolado
+    dfxint = gsl_spline_eval_deriv(cubic_spline, xint, acc); //Primer derivada del valor interpolado
+    d2fxint = gsl_spline_eval_deriv2(cubic_spline, xint, acc); //Segunda derivada del valor interpolado
+    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint); //Almacena los datos interpolados en el archivo
   }
-  printf("La integral de la spline cubica es %.5f\n", gsl_spline_eval_integ(cubic_spline, x[0], x[n - 1], acc));
-  gsl_spline_free(cubic_spline);
-  fclose(output_interp_GSL);
-  gsl_interp_accel_free(acc);
+  printf("La integral de la spline cubica es %.5f\n", gsl_spline_eval_integ(cubic_spline, x[0], x[n - 1], acc)); //Imprime la integral de la interpolación cúbica evaluada en valores de X
+  gsl_spline_free(cubic_spline); //Libera la memoria asociada al espacio de trabajo
+  fclose(output_interp_GSL); //Cierra la secuencia de archivos
+  gsl_interp_accel_free(acc); //"Apaga" el acelerador
 
-  output_interp_GSL = fopen("../interpol_GSL_Akima", "w");
-  test_file_open(output_interp_GSL);
+  output_interp_GSL = fopen("../interpol_GSL_Akima", "w"); //Abre el archivo para almacenar los datos interpolados (Akima)
+  test_file_open(output_interp_GSL); //Checa si el archivo fue abierto correctamente
 
-  acc = gsl_interp_accel_alloc();
-  gsl_spline *akima_spline;
-  akima_spline = gsl_spline_alloc(gsl_interp_akima, n);
-  gsl_spline_init(akima_spline, x, y, n);
+  acc = gsl_interp_accel_alloc(); //Asigna la memoria para el acelerador de tabla de búsquedas
+  gsl_spline *akima_spline; //Asigna la memoria para la estructura spline cúbica con interpolación de Akima
+  akima_spline = gsl_spline_alloc(gsl_interp_akima, n); //Inicializa la spline de Akima
+  gsl_spline_init(akima_spline, x, y, n); //Interpola los datos y los almacena en el archivo
   for (int s = 0; s <= N; s++) {
-    xint = x[0] + s * delta_x;
-    fxint = gsl_spline_eval(akima_spline, xint, acc);
-    dfxint = gsl_spline_eval_deriv(akima_spline, xint, acc);
-    d2fxint = gsl_spline_eval_deriv2(akima_spline, xint, acc);
-    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint);
+    xint = x[0] + s * delta_x; //Punto a interpolar
+    fxint = gsl_spline_eval(akima_spline, xint, acc); //Valor interpolado
+    dfxint = gsl_spline_eval_deriv(akima_spline, xint, acc); //Primer derivada del valor interpolado para la interpolación de Akima
+    d2fxint = gsl_spline_eval_deriv2(akima_spline, xint, acc); //Segunda derivada del valor interpolado para la interpolación de Akima
+    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint); //Almacena los datos interpolados en el archivo
   }
-  printf("La integral de la spline Akima es %.5f\n", gsl_spline_eval_integ(akima_spline, x[0], x[n - 1], acc));
-  gsl_spline_free(akima_spline);
-  fclose(output_interp_GSL);
-  gsl_interp_accel_free(acc);
+  printf("La integral de la spline Akima es %.5f\n", gsl_spline_eval_integ(akima_spline, x[0], x[n - 1], acc));  //Imprime la integral de la interpolación de Akima evaluada en valores de X
+  gsl_spline_free(akima_spline);  //Libera la memoria asociada al espacio de trabajo
+  fclose(output_interp_GSL); //Cierra la secuencia de archivos
+  gsl_interp_accel_free(acc); //"Apaga" el acelerador
 
-  output_interp_GSL = fopen("../interpol_GSL_linear", "w");
-  test_file_open(output_interp_GSL);
+  output_interp_GSL = fopen("../interpol_GSL_linear", "w");  //Abre el archivo para almacenar los datos interpolados (lineal)
+  test_file_open(output_interp_GSL); //Checa si el archivo fue abierto correctamente
 
-  acc = gsl_interp_accel_alloc();
-  gsl_spline *linear_spline;
-  linear_spline = gsl_spline_alloc(gsl_interp_linear, n);
-  gsl_spline_init(linear_spline, x, y, n);
+  acc = gsl_interp_accel_alloc(); //Asigna la memoria para el acelerador de tabla de búsquedas
+  gsl_spline *linear_spline; //Asigna la memoria para la estructura spline cúbica con interpolación lineal
+  linear_spline = gsl_spline_alloc(gsl_interp_linear, n); //Inicializa la spline lineal 
+  gsl_spline_init(linear_spline, x, y, n); //Interpola los datos y los almacena en el archivo
   for (int s = 0; s <= N; s++) {
-    xint = x[0] + s * delta_x;
-    fxint = gsl_spline_eval(linear_spline, xint, acc);
-    dfxint = gsl_spline_eval_deriv(linear_spline, xint, acc);
-    d2fxint = gsl_spline_eval_deriv2(linear_spline, xint, acc);
-    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint);
+    xint = x[0] + s * delta_x; //Punto a interpolar
+    fxint = gsl_spline_eval(linear_spline, xint, acc); //Valor interpolado
+    dfxint = gsl_spline_eval_deriv(linear_spline, xint, acc); //Primer derivada del valor interpolado para la interpolación lineal
+    d2fxint = gsl_spline_eval_deriv2(linear_spline, xint, acc); //Segunda  derivada del valor interpolado para la interpolación lineal
+    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint); //Almacena los datos interpolados en el archivo
   }
-  printf("La integral de la spline lineal es %.5f\n", gsl_spline_eval_integ(linear_spline, x[0], x[n - 1], acc));
-  gsl_spline_free(linear_spline);
-  fclose(output_interp_GSL);
-  gsl_interp_accel_free(acc);
+  printf("La integral de la spline lineal es %.5f\n", gsl_spline_eval_integ(linear_spline, x[0], x[n - 1], acc)); //Imprime la integral de la interpolación lineal evaluada en valores de X
+  gsl_spline_free(linear_spline); //Libera la memoria asociada al espacio de trabajo
+  fclose(output_interp_GSL); //Cierra la secuencia de archivos
+  gsl_interp_accel_free(acc); //"Apaga" el acelerador
 
-  output_interp_GSL = fopen("../interpol_GSL_Steffen", "w");
-  test_file_open(output_interp_GSL);
+  output_interp_GSL = fopen("../interpol_GSL_Steffen", "w"); //Abre el archivo para almacenar los datos interpolados (Steffen)
+  test_file_open(output_interp_GSL); //Checa si el archivo fue abierto correctamente
 
-  acc = gsl_interp_accel_alloc();
-  gsl_spline *steffen_spline;
-  steffen_spline = gsl_spline_alloc(gsl_interp_steffen, n);
-  gsl_spline_init(steffen_spline, x, y, n);
+  acc = gsl_interp_accel_alloc(); //Asigna la memoria para el acelerador de tabla de búsquedas
+  gsl_spline *steffen_spline; //Asigna la memoria para la estructura spline cúbica con interpolación de Steffen
+  steffen_spline = gsl_spline_alloc(gsl_interp_steffen, n); //Inicializa la spline de Steffen
+  gsl_spline_init(steffen_spline, x, y, n); //Interpola los datos y los almacena en el archivo
   for (int s = 0; s <= N; s++) {
-    xint = x[0] + s * delta_x;
-    fxint = gsl_spline_eval(steffen_spline, xint, acc);
-    dfxint = gsl_spline_eval_deriv(steffen_spline, xint, acc);
-    d2fxint = gsl_spline_eval_deriv2(steffen_spline, xint, acc);
-    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint);
+    xint = x[0] + s * delta_x; //Punto a interpolar
+    fxint = gsl_spline_eval(steffen_spline, xint, acc); //Valor interpolado
+    dfxint = gsl_spline_eval_deriv(steffen_spline, xint, acc); //Primer derivada del valor interpolado para la interpolación de Steffen
+    d2fxint = gsl_spline_eval_deriv2(steffen_spline, xint, acc); //Segunda derivada del valor interpolado para la interpolación de Steffen
+    fprintf(output_interp_GSL, "%.5f %.5f %.5f %.5f\n", xint, fxint, dfxint, d2fxint); //Almacena los datos interpolados en el archivo
   }
-  printf("La integral de la spline Steffen es %.5f\n", gsl_spline_eval_integ(steffen_spline, x[0], x[n - 1], acc));
-  gsl_spline_free(steffen_spline);
-  fclose(output_interp_GSL);
-  gsl_interp_accel_free(acc);
+  printf("La integral de la spline Steffen es %.5f\n", gsl_spline_eval_integ(steffen_spline, x[0], x[n - 1], acc)); //Imprime la integral de la interpolación de Steffen evaluada en valores de X
+  gsl_spline_free(steffen_spline); ///Libera la memoria asociada al espacio de trabajo
+  fclose(output_interp_GSL); //Cierra la secuencia de archivos
+  gsl_interp_accel_free(acc); //"Apaga" el acelerador
   
 }
